@@ -16,6 +16,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -23,13 +24,14 @@ import javax.ws.rs.core.Response;
 import org.bson.Document;
 
 import static com.drakeet.rebase.api.tool.ObjectIds.objectId;
+import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lt;
 import static com.mongodb.client.model.Sorts.descending;
 
 /**
  * @author drakeet
  */
-@Path("/feeds") public class FeedResource {
+@Path("categories/{category}/feeds") public class FeedResource {
 
     public MongoCollection<Document> collection;
 
@@ -40,13 +42,18 @@ import static com.mongodb.client.model.Sorts.descending;
 
 
     @GET @Produces(MediaType.APPLICATION_JSON)
-    public Response readList(@QueryParam("last_id") String lastId, @QueryParam("size") int size) {
+    public Response readList(
+        @PathParam("category") String category,
+        @QueryParam("last_id") String lastId,
+        @QueryParam("size") int size) {
+
         List<Feed> feeds = new ArrayList<>();
         FindIterable<Document> iterable = collection.find();
         if (lastId != null) {
             iterable.filter(lt("_id", objectId(lastId)));
         }
         iterable.sort(descending("_id"))
+            .filter(eq("category", category))
             .limit(size)
             .forEach((Consumer<Document>) document -> {
                 final Feed feed = new Feed();
