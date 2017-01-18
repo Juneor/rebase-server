@@ -1,6 +1,7 @@
 package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.Log;
+import com.drakeet.rebase.api.tool.MongoJDBC;
 import com.drakeet.rebase.api.type.User;
 import com.google.common.base.Optional;
 import com.google.gson.Gson;

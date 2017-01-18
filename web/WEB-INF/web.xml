@@ -34,7 +34,7 @@
     </servlet-mapping>
 
     <listener>
-        <listener-class>com.drakeet.rebase.api.RebaseContextListener</listener-class>
+        <listener-class>com.drakeet.rebase.api.tool.RebaseContextListener</listener-class>
     </listener>
 
 </web-app>

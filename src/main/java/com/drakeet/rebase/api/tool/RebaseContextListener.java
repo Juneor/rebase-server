@@ -1,6 +1,5 @@
-package com.drakeet.rebase.api;
+package com.drakeet.rebase.api.tool;
 
-import com.drakeet.rebase.api.tool.Log;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -11,7 +10,7 @@ public class RebaseContextListener implements ServletContextListener {
 
     @Override public void contextInitialized(ServletContextEvent servletContextEvent) {
         Log.prefix = "[Rebase] ~";
-        MongoJDBC.setup();
+        MongoJDBC.setUp();
     }
 
 
