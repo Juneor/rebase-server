@@ -1,5 +1,6 @@
 package com.drakeet.rebase.api.tool;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -31,30 +32,27 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
 
     private static final String UTF_8 = "UTF-8";
 
-    private Gson gson;
 
-
-    private Gson getGson() {
-        if (gson == null) {
-            final GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(ObjectId.class, new ObjectIdSerializer());
-            gson = gsonBuilder.create();
-        }
-        return gson;
+    public static Gson newGson() {
+        final GsonBuilder gsonBuilder = new GsonBuilder()
+            .registerTypeAdapter(ObjectId.class, new ObjectIdSerializer())
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .setDateFormat("YYYY-MM-DD'T'HH:MM:SS'Z'");     // ISO 8601
+        return gsonBuilder.create();
     }
 
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-                              java.lang.annotation.Annotation[] annotations, MediaType mediaType) {
+    @Override public boolean isReadable(
+        Class<?> type, Type genericType,
+        java.lang.annotation.Annotation[] annotations, MediaType mediaType) {
         return true;
     }
 
 
-    @Override
-    public Object readFrom(Class<Object> type, Type genericType,
-                           Annotation[] annotations, MediaType mediaType,
-                           MultivaluedMap<String, String> httpHeaders, InputStream entityStream) {
+    @Override public Object readFrom(
+        Class<Object> type, Type genericType,
+        Annotation[] annotations, MediaType mediaType,
+        MultivaluedMap<String, String> httpHeaders, InputStream entityStream) {
 
         InputStreamReader streamReader = null;
         try {
@@ -70,7 +68,7 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
                 jsonType = genericType;
             }
 
-            return getGson().fromJson(streamReader, jsonType);
+            return newGson().fromJson(streamReader, jsonType);
         } finally {
             try {
                 streamReader.close();
@@ -81,26 +79,26 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
     }
 
 
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-                               Annotation[] annotations, MediaType mediaType) {
+    @Override public boolean isWriteable(
+        Class<?> type, Type genericType,
+        Annotation[] annotations, MediaType mediaType) {
         return true;
     }
 
 
-    @Override
-    public long getSize(Object object, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType) {
+    @Override public long getSize(
+        Object object, Class<?> type, Type genericType,
+        Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
 
-    @Override
-    public void writeTo(Object object, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders,
-                        OutputStream entityStream) throws IOException,
-                                                          WebApplicationException {
+    @Override public void writeTo(
+        Object object, Class<?> type, Type genericType,
+        Annotation[] annotations, MediaType mediaType,
+        MultivaluedMap<String, Object> httpHeaders,
+        OutputStream entityStream) throws IOException, WebApplicationException {
+
         OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8);
         try {
             Type jsonType;
@@ -109,7 +107,7 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
             } else {
                 jsonType = genericType;
             }
-            getGson().toJson(object, jsonType, writer);
+            newGson().toJson(object, jsonType, writer);
         } finally {
             writer.close();
         }

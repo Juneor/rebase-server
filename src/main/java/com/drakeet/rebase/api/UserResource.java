@@ -9,8 +9,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -21,9 +21,8 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
  */
 @Path("/user") public class UserResource {
 
-    @Path("{name}")
     @GET @Produces(MediaType.APPLICATION_JSON)
-    public Response userDetail(@PathParam("name") String name) {
+    public Response userDetail(@QueryParam("name") String name) {
         Optional<User> result = MongoJDBC.find(name);
         if (result.isPresent()) {
             return Response.ok(result.get()).build();
@@ -35,7 +34,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
     @POST @Consumes(MediaType.APPLICATION_JSON)
     public Response register(User user) {
-        Log.i("~~~~~~", new Gson().toJson(user));
+        Log.i("[register]", new Gson().toJson(user));
         MongoJDBC.insert(user);
         return Response.ok("ok").build();
     }

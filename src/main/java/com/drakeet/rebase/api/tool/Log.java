@@ -17,23 +17,23 @@ public class Log {
     }
 
 
-    private static String tag(String tag) {
-        return prefix + " " + tag;
+    private static String tag(Level level, String tag) {
+        return level + " " + prefix + " " + tag;
     }
 
 
     public static void i(String tag, String message) {
-        logger.i(tag(tag), message);
+        logger.i(tag(Level.INFO, tag), message);
     }
 
 
     public static void d(String tag, String message) {
-        logger.d(tag(tag), message);
+        logger.d(tag(Level.DEBUG, tag), message);
     }
 
 
     public static void e(String tag, String msg, Throwable tr) {
-        logger.e(tag(tag), msg + '\n' + getStackTraceString(tr));
+        logger.e(tag(Level.ERROR, tag), msg + '\n' + getStackTraceString(tr));
     }
 
 

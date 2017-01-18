@@ -1,6 +1,6 @@
 package com.drakeet.rebase.api;
 
-import com.drakeet.rebase.api.tool.Config;
+import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Log;
 import com.drakeet.rebase.api.tool.MongoJDBC;
 import com.drakeet.rebase.api.type.Category;
@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bson.Document;
 
+import static com.mongodb.client.model.Sorts.ascending;
+
 /**
  * @author drakeet
  */
@@ -37,7 +39,7 @@ import org.bson.Document;
     public Response readAll() {
         List<Category> categories = new ArrayList<>();
         collection.find()
-            .sort(new Document("rank", 1))
+            .sort(ascending("rank"))
             .forEach((Consumer<Document>) document -> {
                 categories.add(
                     new Category(
@@ -52,7 +54,7 @@ import org.bson.Document;
     @POST @Consumes(MediaType.APPLICATION_JSON)
     public Response newCategory(Category category, @HeaderParam("Authorization") String auth) {
         Log.i("[newCategory]", category.toJson() + " Authorization: " + auth);
-        if (auth.equals(Config.AUTHORIZATION)) {
+        if (Authorizations.verify(auth)) {
             collection.insertOne(Document.parse(category.toJson()));
             return Response.ok(Result.success()).build();
         } else {

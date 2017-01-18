@@ -9,7 +9,7 @@ import javax.servlet.ServletContextListener;
 public class RebaseContextListener implements ServletContextListener {
 
     @Override public void contextInitialized(ServletContextEvent servletContextEvent) {
-        Log.prefix = "[Rebase] ~";
+        Log.prefix = "[Rebase] ~ ";
         MongoJDBC.setUp();
     }
 
