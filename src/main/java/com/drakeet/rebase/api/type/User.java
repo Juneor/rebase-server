@@ -8,5 +8,8 @@ import org.bson.types.ObjectId;
 public class User {
 
     public ObjectId _id;
+    public String username;
+    public String password;
     public String name;
+    public String email;
 }

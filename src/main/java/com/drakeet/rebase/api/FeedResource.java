@@ -31,7 +31,7 @@ import static com.mongodb.client.model.Sorts.descending;
 /**
  * @author drakeet
  */
-@Path("categories/{category}/feeds") public class FeedResource {
+@Path("categories/{username}/{category}/feeds") public class FeedResource {
 
     public MongoCollection<Document> collection;
 
@@ -43,6 +43,7 @@ import static com.mongodb.client.model.Sorts.descending;
 
     @GET @Produces(MediaType.APPLICATION_JSON)
     public Response readList(
+        @PathParam("username") String username,
         @PathParam("category") String category,
         @QueryParam("last_id") String lastId,
         @QueryParam("size") int size) {
@@ -54,6 +55,7 @@ import static com.mongodb.client.model.Sorts.descending;
         }
         iterable.sort(descending("_id"))
             .filter(eq("category", category))
+            .filter(eq("owner", username))
             .limit(size)
             .forEach((Consumer<Document>) document -> {
                 final Feed feed = new Feed();
@@ -62,7 +64,7 @@ import static com.mongodb.client.model.Sorts.descending;
                 feed.content = document.getString("content");
                 feed.url = document.getString("url");
                 feed.category = document.getString("category");
-                feed.author = document.getString("author");
+                feed.owner = document.getString("author");
                 feed.cover = document.getString("cover");
                 feed.publishedAt = document.getDate("published_at");
                 feeds.add(feed);
@@ -75,6 +77,7 @@ import static com.mongodb.client.model.Sorts.descending;
     public Response newFeed(Feed feed, @HeaderParam("Authorization") String auth) {
         Log.i("[newFeed]", feed.toJson() + " Authorization: " + auth);
         if (Authorizations.verify(auth)) {
+            // TODO: 2017/1/19 avoid passing all fields.
             Document document = Document.parse(feed.toJson());
             document.put("published_at", new Date());
             collection.insertOne(document);

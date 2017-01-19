@@ -13,14 +13,14 @@ public class Feed extends Jsonable {
     public String content;
     public String url;
     public String category;
-    public String author;
+    public String owner;
     public String cover;
     public Date publishedAt;
 
 
     /**
-     * {"title":"a title","content":"a content","url":"a url","category":"a category","author":"an
-     * author","cover":"a cover"}
+     * {"title":"a title","content":"a content",
+     * "url":"a url","category":"a category", "cover":"a cover"}
      */
     public static void main(String[] args) {
         Feed feed = new Feed();
@@ -28,7 +28,7 @@ public class Feed extends Jsonable {
         feed.content = "a content";
         feed.url = "a url";
         feed.category = "a category";
-        feed.author = "an author";
+        feed.owner = "an owner";
         feed.cover = "a cover";
         System.out.println(feed.toJson());
     }

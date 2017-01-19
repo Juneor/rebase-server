@@ -36,7 +36,7 @@ public class MongoJDBC {
 
 
     public static void insert(User user) {
-        Document document = new Document("name", user.name);
+        Document document = new Document("name", user.username);
         userCollection.insertOne(document);
         Log.i(TAG, "Insert user successfully");
     }
