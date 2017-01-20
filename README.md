@@ -136,7 +136,7 @@ Status: 200 OK
 ## Create a category
 
 ```
-POST /categories
+POST /categories/:owner
 ```
 
 Parameters
