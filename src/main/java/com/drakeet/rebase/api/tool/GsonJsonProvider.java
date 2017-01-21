@@ -99,8 +99,7 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
         MultivaluedMap<String, Object> httpHeaders,
         OutputStream entityStream) throws IOException, WebApplicationException {
 
-        OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8);
-        try {
+        try (OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8)) {
             Type jsonType;
             if (type.equals(genericType)) {
                 jsonType = type;
@@ -108,8 +107,6 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
                 jsonType = genericType;
             }
             newGson().toJson(object, jsonType, writer);
-        } finally {
-            writer.close();
         }
     }
 }

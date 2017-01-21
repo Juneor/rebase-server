@@ -9,6 +9,7 @@ public class Category extends Jsonable {
     public static final String NAME = "name";
     public static final String RANK = "rank";
     public static final String OWNER = "owner";
+    public static final String CREATED_AT = "created_at";
 
     public String key;
     public String name;
