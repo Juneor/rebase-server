@@ -1,6 +1,7 @@
 package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.Authorizations;
+import com.drakeet.rebase.api.tool.Config;
 import com.drakeet.rebase.api.tool.MongoJDBC;
 import com.drakeet.rebase.api.tool.Responses;
 import com.drakeet.rebase.api.tool.URIs;
@@ -44,6 +45,9 @@ import static com.mongodb.client.model.Sorts.descending;
         @QueryParam("last_id") String lastId,
         @DefaultValue("20") @QueryParam("size") int size) {
 
+        if (size > Config.MAX_SIZE) {
+            size = Config.MAX_SIZE;
+        }
         List<Document> feeds = new ArrayList<>();
         FindIterable<Document> iterable = MongoJDBC.feeds().find();
         if (lastId != null) {
