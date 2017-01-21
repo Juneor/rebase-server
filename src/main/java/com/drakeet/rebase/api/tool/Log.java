@@ -13,12 +13,12 @@ public class Log {
 
 
     public enum Level {
-        DEBUG, INFO, WARNING, ERROR
+        INFO, WARNING, ERROR
     }
 
 
     private static String tag(Level level, String tag) {
-        return level + " " + prefix + " " + tag;
+        return String.format("[%s] %s %s", level, prefix, tag);
     }
 
 
@@ -27,8 +27,13 @@ public class Log {
     }
 
 
-    public static void d(String tag, String message) {
-        logger.d(tag(Level.DEBUG, tag), message);
+    public static void w(String tag, String message) {
+        logger.w(tag(Level.WARNING, tag), message);
+    }
+
+
+    public static void e(String tag, String msg) {
+        logger.e(tag(Level.ERROR, tag), msg);
     }
 
 
@@ -71,8 +76,8 @@ public class Log {
         }
 
 
-        void d(String tag, String message) {
-            level = Level.DEBUG;
+        void w(String tag, String message) {
+            level = Level.WARNING;
             System.out.println(tag + ": " + message);
         }
 

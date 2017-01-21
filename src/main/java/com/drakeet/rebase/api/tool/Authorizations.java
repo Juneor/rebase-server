@@ -7,9 +7,10 @@ import com.drakeet.rebase.api.type.User;
  */
 public class Authorizations {
 
-    public static User verify(String authorization) {
-        //return Config.AUTHORIZATION.equals(authorization);
-        // TODO: 2017/1/19  
-        return new User();
+    public static User verify(String username, String authorization) {
+        if (Config.AUTHORIZATION.equals(authorization)) {
+            return new User("drakeet");
+        }
+        return null;
     }
 }

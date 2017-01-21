@@ -5,10 +5,19 @@ package com.drakeet.rebase.api.type;
  */
 public class Category extends Jsonable {
 
-    public final String key;
-    public final String name;
-    public final int rank;
+    public static final String KEY = "key";
+    public static final String NAME = "name";
+    public static final String RANK = "rank";
+    public static final String OWNER = "owner";
+
+    public String key;
+    public String name;
+    public int rank;
     public String owner;
+
+
+    public Category() {
+    }
 
 
     public Category(String key, String name, int rank, String owner) {

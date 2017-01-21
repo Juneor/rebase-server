@@ -12,4 +12,9 @@ public class User {
     public String password;
     public String name;
     public String email;
+
+
+    public User(String username) {
+        this.username = username;
+    }
 }

@@ -2,11 +2,11 @@ package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Log;
-import com.drakeet.rebase.api.tool.MongoJDBC;
+import com.drakeet.rebase.api.tool.Resource;
 import com.drakeet.rebase.api.type.Feed;
 import com.drakeet.rebase.api.type.Result;
+import com.drakeet.rebase.api.type.User;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,13 +31,10 @@ import static com.mongodb.client.model.Sorts.descending;
 /**
  * @author drakeet
  */
-@Path("categories/{username}/{category}/feeds") public class FeedResource {
-
-    public MongoCollection<Document> collection;
-
+@Path("categories/{username}/{category}/feeds") public class FeedResource extends Resource {
 
     public FeedResource() {
-        collection = MongoJDBC.db().getCollection("feed");
+        super("feed");
     }
 
 
@@ -76,12 +73,13 @@ import static com.mongodb.client.model.Sorts.descending;
     @POST @Consumes(MediaType.APPLICATION_JSON)
     public Response newFeed(Feed feed, @HeaderParam("Authorization") String auth) {
         Log.i("[newFeed]", feed.toJson() + " Authorization: " + auth);
-        if (Authorizations.verify(auth)) {
+        final User user = Authorizations.verify(null, auth);
+        if (user != null) {
             // TODO: 2017/1/19 avoid passing all fields.
             Document document = Document.parse(feed.toJson());
             document.put("published_at", new Date());
             collection.insertOne(document);
-            return Response.ok(Result.success()).build();
+            return Response.ok(document).build();
         } else {
             return Response.status(Response.Status.UNAUTHORIZED)
                 .entity(Result.failure("Unauthorized"))
