@@ -23,8 +23,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import static com.drakeet.rebase.api.tool.ObjectIds.objectId;
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lt;
 import static com.mongodb.client.model.Projections.include;
@@ -50,14 +52,14 @@ import static com.mongodb.client.model.Sorts.descending;
         }
         List<Document> feeds = new ArrayList<>();
         FindIterable<Document> iterable = MongoJDBC.feeds().find();
+        List<Bson> filters = new ArrayList<>();
         if (lastId != null) {
-            iterable.filter(lt(Feed._ID, objectId(lastId)));
+            filters.add(lt(Feed._ID, objectId(lastId)));
         }
-        iterable.projection(include(Feed._ID, Feed.TITLE, Feed.CONTENT,
-            Feed.URL, Feed.CATEGORY, Feed.OWNER, Feed.COVER, Feed.PUBLISHED_AT))
-            .sort(descending(Feed._ID))
-            .filter(eq(Feed.CATEGORY, category))
-            .filter(eq(Feed.OWNER, owner))
+        filters.add(eq(Feed.CATEGORY, category));
+        filters.add(eq(Feed.OWNER, owner));
+        iterable.sort(descending(Feed._ID))
+            .filter(and(filters))
             .limit(size)
             .into(feeds);
         return Response.ok(feeds).build();
