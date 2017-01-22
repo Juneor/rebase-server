@@ -21,13 +21,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.bson.Document;
 
+import static com.drakeet.rebase.api.type.Category.CREATED_AT;
 import static com.drakeet.rebase.api.type.Category.KEY;
 import static com.drakeet.rebase.api.type.Category.NAME;
 import static com.drakeet.rebase.api.type.Category.OWNER;
 import static com.drakeet.rebase.api.type.Category.RANK;
-import static com.drakeet.rebase.api.type.Category.CREATED_AT;
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Projections.excludeId;
 import static com.mongodb.client.model.Sorts.ascending;
 
 /**
@@ -43,7 +43,7 @@ import static com.mongodb.client.model.Sorts.ascending;
     public Response readAllOf(@PathParam("owner") String owner) {
         List<Document> categories = new ArrayList<>();
         MongoDBs.categories().find()
-            .projection(include(KEY, NAME, RANK, OWNER))
+            .projection(excludeId())
             .filter(eq(OWNER, owner))
             .sort(ascending(RANK))
             .limit(Config.LIMIT_CATEGORIES)
@@ -55,22 +55,22 @@ import static com.mongodb.client.model.Sorts.ascending;
     @Path("{owner}")
     @POST @Consumes(MediaType.APPLICATION_JSON)
     public Response newCategory(
-        Category category,
+        Category input,
         @PathParam("owner") String owner) {
 
         if (Authorizations.verify(owner, auth)) {
-            Document document = new Document(KEY, category.key)
-                .append(NAME, category.name)
-                .append(RANK, category.rank)
+            Document category = new Document(KEY, input.key)
+                .append(NAME, input.name)
+                .append(RANK, input.rank)
                 .append(OWNER, owner)
                 .append(CREATED_AT, new Date());
             try {
-                MongoDBs.categories().insertOne(document);
+                MongoDBs.categories().insertOne(category);
             } catch (final MongoWriteException e) {
                 return Responses.dbWriteError(e);
             }
-            return Response.created(URIs.create("categories", owner, category.key))
-                .entity(document)
+            return Response.created(URIs.create("categories", owner, input.key))
+                .entity(category)
                 .build();
         } else {
             return Responses.unauthorized();
