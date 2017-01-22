@@ -1,7 +1,8 @@
 package com.drakeet.rebase.api;
 
+import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Hashes;
-import com.drakeet.rebase.api.tool.MongoJDBC;
+import com.drakeet.rebase.api.tool.MongoDBs;
 import com.drakeet.rebase.api.tool.Responses;
 import com.drakeet.rebase.api.tool.URIs;
 import com.drakeet.rebase.api.type.User;
@@ -32,8 +33,8 @@ import static com.mongodb.client.model.Projections.exclude;
     @Path("{username}")
     @GET @Produces(MediaType.APPLICATION_JSON)
     public Response userDetail(@PathParam("username") String username) {
-        Document _user = MongoJDBC.users().find(eq(User.USERNAME, username))
-            .projection(exclude(User.PASSWORD))
+        Document _user = MongoDBs.users().find(eq(User.USERNAME, username))
+            .projection(exclude(User.PASSWORD, User.AUTHORIZATION))
             .first();
         Optional<Document> user = Optional.fromNullable(_user);
         if (user.isPresent()) {
@@ -46,19 +47,22 @@ import static com.mongodb.client.model.Projections.exclude;
 
     @POST @Consumes(MediaType.APPLICATION_JSON)
     public Response register(User user) {
-        Document document = new Document("username", user.username)
+        Document document = new Document(User.USERNAME, user.username)
             .append(User.PASSWORD, Hashes.sha1(user.password))
             .append(User.NAME, user.name)
             .append(User.EMAIL, user.email)
             .append(User.DESCRIPTION, user.description)
+            .append(User.AUTHORIZATION, Authorizations.newInstance(user.username))
             .append(User.CREATED_AT, new Date());
         try {
-            MongoJDBC.users().insertOne(document);
+            MongoDBs.users().insertOne(document);
         } catch (MongoWriteException e) {
             return Responses.dbWriteError(e);
         }
+        Document result = new Document(document);
+        result.remove(User.PASSWORD);
         return Response.created(URIs.create("users", user.username))
-            .entity(document)
+            .entity(result)
             .build();
     }
 }

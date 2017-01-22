@@ -12,9 +12,9 @@ import org.bson.Document;
 /**
  * @author drakeet
  */
-public class MongoJDBC {
+public class MongoDBs {
 
-    private static final String TAG = MongoJDBC.class.getSimpleName();
+    private static final String TAG = MongoDBs.class.getSimpleName();
     private static MongoDatabase db;
     private static MongoCollection<Document> users;
     private static MongoCollection<Document> categories;
@@ -25,7 +25,7 @@ public class MongoJDBC {
         MongoClient mongoClient = new MongoClient("localhost", 27017);
         db = mongoClient.getDatabase("rebase");
         Log.i(TAG, "[setUp] Connect to database successfully");
-        MongoJDBC.initCollections(db);
+        MongoDBs.initCollections(db);
     }
 
 
@@ -41,9 +41,13 @@ public class MongoJDBC {
         categories = db.getCollection("categories");
         feeds = db.getCollection("feeds");
 
-        IndexOptions unique = new IndexOptions().unique(true);
-        users.createIndex(Indexes.ascending(User.USERNAME), unique);
-        categories.createIndex(Indexes.ascending(Category.OWNER, Category.KEY), unique);
+        users.createIndex(
+            Indexes.ascending(User.USERNAME),
+            new IndexOptions().unique(true));
+
+        categories.createIndex(
+            Indexes.ascending(Category.OWNER, Category.KEY),
+            new IndexOptions().unique(true));
     }
 
 

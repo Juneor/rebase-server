@@ -1,5 +1,9 @@
 package com.drakeet.rebase.api.tool;
 
+import com.drakeet.rebase.api.type.User;
+import java.util.Date;
+import java.util.UUID;
+
 /**
  * @author drakeet
  */
@@ -18,5 +22,22 @@ public class Authorizations {
             return true;
         }
         return false;
+    }
+
+
+    public static String issueToken(String username) {
+        String key = UUID.randomUUID().toString().toUpperCase() +
+            "|" + username +
+            "|" + System.currentTimeMillis();
+
+        return Hashes.sha1(key);
+    }
+
+
+    public static User.Authorization newInstance(String username) {
+        User.Authorization authorization = new User.Authorization();
+        authorization.setAccessToken(issueToken(username));
+        authorization.setUpdatedAt(new Date());
+        return authorization;
     }
 }

@@ -2,7 +2,7 @@ package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.GsonJsonProvider;
 import com.drakeet.rebase.api.tool.Log;
-import com.drakeet.rebase.api.tool.MongoJDBC;
+import com.drakeet.rebase.api.tool.MongoDBs;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
@@ -22,6 +22,6 @@ public class Application extends ResourceConfig {
         register(FeedResource.class);
         register(GsonJsonProvider.class);
         Log.prefix = "------> [Rebase] ~ ";
-        MongoJDBC.setUp();
+        MongoDBs.setUp();
     }
 }

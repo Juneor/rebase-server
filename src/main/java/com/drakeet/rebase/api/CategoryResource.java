@@ -2,7 +2,7 @@ package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Config;
-import com.drakeet.rebase.api.tool.MongoJDBC;
+import com.drakeet.rebase.api.tool.MongoDBs;
 import com.drakeet.rebase.api.tool.Responses;
 import com.drakeet.rebase.api.tool.URIs;
 import com.drakeet.rebase.api.type.Category;
@@ -42,7 +42,7 @@ import static com.mongodb.client.model.Sorts.ascending;
     @GET @Produces(MediaType.APPLICATION_JSON)
     public Response readAllOf(@PathParam("owner") String owner) {
         List<Document> categories = new ArrayList<>();
-        MongoJDBC.categories().find()
+        MongoDBs.categories().find()
             .projection(include(KEY, NAME, RANK, OWNER))
             .filter(eq(OWNER, owner))
             .sort(ascending(RANK))
@@ -65,7 +65,7 @@ import static com.mongodb.client.model.Sorts.ascending;
                 .append(OWNER, owner)
                 .append(CREATED_AT, new Date());
             try {
-                MongoJDBC.categories().insertOne(document);
+                MongoDBs.categories().insertOne(document);
             } catch (final MongoWriteException e) {
                 return Responses.dbWriteError(e);
             }

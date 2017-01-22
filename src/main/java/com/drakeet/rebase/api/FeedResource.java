@@ -2,7 +2,7 @@ package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Config;
-import com.drakeet.rebase.api.tool.MongoJDBC;
+import com.drakeet.rebase.api.tool.MongoDBs;
 import com.drakeet.rebase.api.tool.Responses;
 import com.drakeet.rebase.api.tool.URIs;
 import com.drakeet.rebase.api.type.Category;
@@ -51,7 +51,7 @@ import static com.mongodb.client.model.Sorts.descending;
             size = Config.MAX_SIZE;
         }
         List<Document> feeds = new ArrayList<>();
-        FindIterable<Document> iterable = MongoJDBC.feeds().find();
+        FindIterable<Document> iterable = MongoDBs.feeds().find();
         List<Bson> filters = new ArrayList<>();
         if (lastId != null) {
             filters.add(lt(Feed._ID, objectId(lastId)));
@@ -78,7 +78,7 @@ import static com.mongodb.client.model.Sorts.descending;
                 .append(Feed.URL, feed.url)
                 .append(Feed.OWNER, owner)
                 .append(Feed.PUBLISHED_AT, new Date());
-            MongoJDBC.feeds().insertOne(document);
+            MongoDBs.feeds().insertOne(document);
             return Response.created(
                 URIs.create("categories", owner, category, "feeds",
                     document.getObjectId(Feed._ID).toHexString()))
@@ -91,7 +91,7 @@ import static com.mongodb.client.model.Sorts.descending;
 
 
     private boolean existCategory(String key) {
-        return MongoJDBC.categories().find(eq(Category.KEY, key))
+        return MongoDBs.categories().find(eq(Category.KEY, key))
             .projection(include(Category.KEY))
             .limit(1).first() != null;
     }
