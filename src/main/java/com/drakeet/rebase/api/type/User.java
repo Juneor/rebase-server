@@ -31,25 +31,9 @@ public class User {
     }
 
 
-    public static class Authorization extends Document {
+    public static class Authorization {
 
-        public String getAccessToken() {
-            return getString("access_token");
-        }
-
-
-        public void setAccessToken(String accessToken) {
-            put("access_token", accessToken);
-        }
-
-
-        public Date getUpdatedAt() {
-            return getDate("updated_at");
-        }
-
-
-        public void setUpdatedAt(Date updatedAt) {
-            put("updated_at", updatedAt);
-        }
+        public static final String ACCESS_TOKEN = "access_token";
+        public static final String UPDATED_AT = "updated_at";
     }
 }

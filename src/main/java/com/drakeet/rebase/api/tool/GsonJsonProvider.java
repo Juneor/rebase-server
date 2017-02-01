@@ -37,7 +37,8 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
         final GsonBuilder gsonBuilder = new GsonBuilder()
             .registerTypeAdapter(ObjectId.class, new ObjectIdSerializer())
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .setDateFormat("YYYY-MM-DD'T'HH:MM:SS'Z'");     // ISO 8601
+            .setPrettyPrinting()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");     // ISO 8601
         return gsonBuilder.create();
     }
 
