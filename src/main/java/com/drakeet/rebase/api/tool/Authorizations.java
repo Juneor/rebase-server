@@ -4,6 +4,8 @@ import com.drakeet.rebase.api.type.User;
 import com.drakeet.rebase.api.type.User.Authorization;
 import java.util.Date;
 import java.util.UUID;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import org.bson.Document;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -17,32 +19,35 @@ public class Authorizations {
 
 
     /**
-     * xxx
+     * Verifies that the user's authorization.
      *
-     * @param username xxx
-     * @param authorization xx
-     * @return xx
-     * @throws 403
+     * @param username The username of the user.
+     * @param authorization The authorization of the user.
+     * @throws IllegalArgumentException When the format of Authorization is unexpected.
+     * @throws WebApplicationException When UNAUTHORIZED.
      */
-    public static boolean verify(String username, String authorization) {
-        try {
-            final String accessToken;
-            if (authorization.startsWith("token")) {
-                accessToken = authorization.split(" ")[1];
-            } else {
-                throw new IllegalArgumentException("The format of Authorization is unexpected.");
-            }
-            Document user = MongoDBs.users().find(eq(User.USERNAME, username)).first();
-            Document auth = user.get(User.AUTHORIZATION, Document.class);
-            if (auth.getString("access_token").equals(accessToken)) {
-                Log.i(TAG, "Verified successfully.");
-                return true;
-            }
-        } catch (final Exception e) {
-            Log.e(TAG, "[verify]", e);
-            return false;
+    public static void verify(String username, String authorization) {
+        final String accessToken;
+        if (authorization.startsWith("token")) {
+            accessToken = authorization.split(" ")[1];
+        } else {
+            throw new IllegalArgumentException("The format of Authorization is unexpected.");
         }
-        return false;
+        Document user = MongoDBs.users().find(eq(User.USERNAME, username)).first();
+        if (user == null) {
+            throwUnauthorized();
+        }
+        Document auth = user.get(User.AUTHORIZATION, Document.class);
+        if (auth.getString(Authorization.ACCESS_TOKEN).equals(accessToken)) {
+            Log.i(TAG, "Verified successfully.");
+        } else {
+            throwUnauthorized();
+        }
+    }
+
+
+    private static void throwUnauthorized() {
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
 
 
@@ -56,9 +61,8 @@ public class Authorizations {
 
 
     public static Document newInstance(String username) {
-        Document authorization = new Document()
+        return new Document()
             .append(Authorization.ACCESS_TOKEN, issueToken(username))
             .append(Authorization.UPDATED_AT, new Date());
-        return authorization;
     }
 }

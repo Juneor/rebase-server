@@ -1,11 +1,10 @@
 package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.Authorizations;
-import com.drakeet.rebase.api.tool.Config;
+import com.drakeet.rebase.api.tool.Globals;
 import com.drakeet.rebase.api.tool.MongoDBs;
-import com.drakeet.rebase.api.tool.Responses;
+import com.drakeet.rebase.api.tool.RebaseAsserts;
 import com.drakeet.rebase.api.tool.URIs;
-import com.drakeet.rebase.api.type.Category;
 import com.drakeet.rebase.api.type.Feed;
 import com.mongodb.client.FindIterable;
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import static com.drakeet.rebase.api.tool.ObjectIds.objectId;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lt;
-import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Sorts.descending;
 
 /**
@@ -47,8 +45,8 @@ import static com.mongodb.client.model.Sorts.descending;
         @QueryParam("last_id") String lastId,
         @DefaultValue("20") @QueryParam("size") int size) {
 
-        if (size > Config.MAX_SIZE) {
-            size = Config.MAX_SIZE;
+        if (size > Globals.MAX_SIZE) {
+            size = Globals.MAX_SIZE;
         }
         List<Document> feeds = new ArrayList<>();
         FindIterable<Document> iterable = MongoDBs.feeds().find();
@@ -68,31 +66,19 @@ import static com.mongodb.client.model.Sorts.descending;
 
     @POST @Consumes(MediaType.APPLICATION_JSON)
     public Response newFeed(Feed feed) {
-        if (Authorizations.verify(owner, auth)) {
-            if (!existCategory(category)) {
-                return Responses.notFound("The category is not found.");
-            }
-            Document document = new Document(Feed.CATEGORY, category)
-                .append(Feed.TITLE, feed.title)
-                .append(Feed.CONTENT, feed.content)
-                .append(Feed.URL, feed.url)
-                .append(Feed.OWNER, owner)
-                .append(Feed.PUBLISHED_AT, new Date());
-            MongoDBs.feeds().insertOne(document);
-            return Response.created(
-                URIs.create("categories", owner, category, "feeds",
-                    document.getObjectId(Feed._ID).toHexString()))
-                .entity(document)
-                .build();
-        } else {
-            return Responses.unauthorized();
-        }
-    }
-
-
-    private boolean existCategory(String key) {
-        return MongoDBs.categories().find(eq(Category.KEY, key))
-            .projection(include(Category.KEY))
-            .limit(1).first() != null;
+        Authorizations.verify(owner, auth);
+        RebaseAsserts.existCategory(category);
+        Document document = new Document(Feed.CATEGORY, category)
+            .append(Feed.TITLE, feed.title)
+            .append(Feed.CONTENT, feed.content)
+            .append(Feed.URL, feed.url)
+            .append(Feed.OWNER, owner)
+            .append(Feed.PUBLISHED_AT, new Date());
+        MongoDBs.feeds().insertOne(document);
+        return Response.created(
+            URIs.create("categories", owner, category, "feeds",
+                document.getObjectId(Feed._ID).toHexString()))
+            .entity(document)
+            .build();
     }
 }

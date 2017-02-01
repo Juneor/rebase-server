@@ -1,8 +1,5 @@
 package com.drakeet.rebase.api.tool;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,7 +16,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import org.bson.types.ObjectId;
 
 /**
  * @author drakeet
@@ -27,20 +23,10 @@ import org.bson.types.ObjectId;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public final class GsonJsonProvider implements MessageBodyWriter<Object>,
+public final class GsonBodyProvider implements MessageBodyWriter<Object>,
     MessageBodyReader<Object> {
 
     private static final String UTF_8 = "UTF-8";
-
-
-    public static Gson newGson() {
-        final GsonBuilder gsonBuilder = new GsonBuilder()
-            .registerTypeAdapter(ObjectId.class, new ObjectIdSerializer())
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .setPrettyPrinting()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");     // ISO 8601
-        return gsonBuilder.create();
-    }
 
 
     @Override public boolean isReadable(
@@ -69,7 +55,7 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
                 jsonType = genericType;
             }
 
-            return newGson().fromJson(streamReader, jsonType);
+            return Globals.newGson().fromJson(streamReader, jsonType);
         } finally {
             try {
                 streamReader.close();
@@ -107,7 +93,7 @@ public final class GsonJsonProvider implements MessageBodyWriter<Object>,
             } else {
                 jsonType = genericType;
             }
-            newGson().toJson(object, jsonType, writer);
+            Globals.newGson().toJson(object, jsonType, writer);
         }
     }
 }

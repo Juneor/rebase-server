@@ -1,6 +1,6 @@
 package com.drakeet.rebase.api.type;
 
-import com.drakeet.rebase.api.tool.GsonJsonProvider;
+import com.drakeet.rebase.api.tool.GsonBodyProvider;
 
 /**
  * @author drakeet
@@ -8,6 +8,6 @@ import com.drakeet.rebase.api.tool.GsonJsonProvider;
 public class Jsonable {
 
     public String toJson() {
-        return GsonJsonProvider.newGson().toJson(this);
+        return GsonBodyProvider.newGson().toJson(this);
     }
 }
