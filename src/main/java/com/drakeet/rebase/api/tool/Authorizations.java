@@ -1,7 +1,7 @@
 package com.drakeet.rebase.api.tool;
 
+import com.drakeet.rebase.api.type.Authorization;
 import com.drakeet.rebase.api.type.User;
-import com.drakeet.rebase.api.type.User.Authorization;
 import java.util.Date;
 import java.util.UUID;
 import javax.ws.rs.WebApplicationException;

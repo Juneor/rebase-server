@@ -1,4 +1,4 @@
-API v0.1
+API v0.7
 
 # Specifications
 
@@ -30,7 +30,7 @@ For POST, PATCH, PUT, and DELETE requests, parameters not included in the URL sh
 
 ## Access Token
 
-Access token is required for all  POST, PATCH, PUT, and DELETE requests.
+Access token is required for all POST, PATCH, PUT, and DELETE requests, except `user register`.
 
 Header
 
@@ -64,10 +64,11 @@ Input
 
 | Name      |    Type | Description  |
 | :-------- | :--------| :-- |
-| username | String | **Required**. The username of the user. |
-| password | String | **Required**. The password of the user. |
+| username | String | **Required**. The username of the user. It is immutable. |
+| password | String | **Required**. The password of the user, will be stored with SHA hash. |
 | name | String | **Required**. The name of the user. |
 | email | String | **Required**. The email of the user to contact. |
+| description | String | **Required**. The description of the user. |
 
 Response
 
@@ -77,7 +78,8 @@ Status: 201 Created
 {
     "username": "drakeet",
     "name": "drakeet",
-    "email": "drakeet.me@gmail.com"
+    "email": "drakeet.me@gmail.com",
+    "description": "an Android developer."
 }
 ```
 
@@ -151,6 +153,7 @@ Response
 
 ```
 Status: 201 Created
+Location: https://api.drakeet.com/rebase/categories/drakeet/cat
 
 {
     "key": "a key",
@@ -175,7 +178,7 @@ Parameters
 | Name      |    Type | Description  |
 | :-------- | :--------| :-- |
 | last_id | String | Default: null. The last feed id of the feeds. |
-| size | int | Default: 15. The size of the feeds. |
+| size | int | Default: 20. The size of the feeds. |
 
 Response
 
@@ -216,7 +219,6 @@ Input
 
 | Name      |    Type | Description  |
 | :-------- | :--------| :-- |
-| category | String | **Required**. The category of the feed. |
 | title | String | The title of the feed. |
 | content | String | The content of the feed. |
 | url | String | The target URL of the feed. |
@@ -226,6 +228,7 @@ Response
 
 ```
 Status: 201 Created
+Location: https://api.drakeet.com/rebase/categories/drakeet/fun/feeds/5883235334b352758f6617d8
 
 {
     "_id": "1",
@@ -233,8 +236,19 @@ Status: 201 Created
     "content": "a content",
     "url": "an url",
     "category": "a category",
-    "owner": "an owner",
+    "owner": "an owner's username",
     "cover": "a cover url",
     "published_at": "2017-01-19T05:44:38Z"
 }
+```
+## Delete a feed
+
+```
+DELETE categories/:owner/:category/feeds/:_id
+```
+
+Response
+
+```
+Status: 204 No Content
 ```
