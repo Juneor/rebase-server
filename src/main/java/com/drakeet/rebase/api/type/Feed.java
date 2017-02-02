@@ -35,20 +35,4 @@ public class Feed extends Jsonable {
 
     @org.hibernate.validator.constraints.URL
     public String cover;
-
-
-    /**
-     * {"title":"a title","content":"a content",
-     * "url":"a url","category":"a category", "cover":"a cover"}
-     */
-    public static void main(String[] args) {
-        Feed feed = new Feed();
-        feed.title = "a title";
-        feed.content = "a content";
-        feed.url = "a url";
-        feed.category = "a category";
-        feed.owner = "an owner";
-        feed.cover = "a cover";
-        System.out.println(feed.toJson());
-    }
 }
