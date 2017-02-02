@@ -15,7 +15,7 @@ Content-Type: application/json; charset=utf-8
 All timestamps are returned in ISO 8601 format:
 
 ```
-YYYY-MM-DDTHH:MM:SSZ
+yyyy-MM-dd'T'HH:mm:ssZ
 ```
 
 ## Parameters
