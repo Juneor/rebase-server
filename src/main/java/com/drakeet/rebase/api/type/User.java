@@ -1,8 +1,5 @@
 package com.drakeet.rebase.api.type;
 
-import java.util.Date;
-import org.bson.Document;
-
 /**
  * @author drakeet
  */

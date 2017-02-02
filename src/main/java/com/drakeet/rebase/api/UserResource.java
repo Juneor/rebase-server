@@ -7,7 +7,6 @@ import com.drakeet.rebase.api.tool.Responses;
 import com.drakeet.rebase.api.tool.URIs;
 import com.drakeet.rebase.api.type.User;
 import com.google.common.base.Optional;
-import com.mongodb.MongoWriteException;
 import java.util.Date;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -54,11 +53,7 @@ import static com.mongodb.client.model.Projections.exclude;
             .append(User.DESCRIPTION, user.description)
             .append(User.AUTHORIZATION, Authorizations.newInstance(user.username))
             .append(User.CREATED_AT, new Date());
-        try {
-            MongoDBs.users().insertOne(document);
-        } catch (MongoWriteException e) {
-            return Responses.dbWriteError(e);
-        }
+        MongoDBs.users().insertOne(document);
         Document result = new Document(document);
         result.remove(User.PASSWORD);
         return Response.created(URIs.create("users", user.username))
