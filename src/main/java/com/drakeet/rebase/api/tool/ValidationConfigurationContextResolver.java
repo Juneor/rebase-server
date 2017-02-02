@@ -52,6 +52,7 @@ public class ValidationConfigurationContextResolver implements ContextResolver<V
             if ("readAll".equals(method.getName())) {
                 return Arrays.asList("last_id", "size");
             }
+            // TODO: 2017/2/2 more 
             return nameProvider.getParameterNames(method);
         }
     }
