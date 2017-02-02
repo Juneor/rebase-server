@@ -22,8 +22,8 @@ public class RebaseAsserts {
     }
 
 
-    public static void notNull(Object user, String argName) {
-        if (user == null) {
+    public static void notNull(Object o, String argName) {
+        if (o == null) {
             throwNotFoundOf(argName);
         }
     }

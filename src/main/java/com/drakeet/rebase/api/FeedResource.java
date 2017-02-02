@@ -15,6 +15,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -82,5 +83,23 @@ import static com.mongodb.client.model.Sorts.descending;
                 document.getObjectId(Feed._ID).toHexString()))
             .entity(document)
             .build();
+    }
+
+
+    @GET @Path("{_id}")
+    public Response feedDetail(@PathParam("_id") String _id) {
+        Document feed = MongoDBs.feeds()
+            .find(eq(Feed._ID, objectId(_id)))
+            .limit(1).first();
+        RebaseAsserts.notNull(feed, "feed");
+        return Response.ok(feed).build();
+    }
+
+
+    @DELETE @Path("{_id}")
+    public Response deleteFeed(@PathParam("_id") String _id) {
+        Authorizations.verify(owner, auth);
+        MongoDBs.feeds().deleteOne(eq(Feed._ID, objectId(_id)));
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

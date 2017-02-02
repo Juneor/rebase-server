@@ -38,9 +38,9 @@ import static com.mongodb.client.model.Sorts.ascending;
     @HeaderParam("Authorization") String auth;
 
 
-    @Path("{owner}")
-    @GET @Produces(MediaType.APPLICATION_JSON)
-    public Response readAllOf(@Username @PathParam("owner") String owner) {
+    @GET @Path("{owner}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response readAll(@Username @PathParam("owner") String owner) {
         List<Document> categories = new ArrayList<>();
         MongoDBs.categories().find()
             .projection(excludeId())
@@ -52,8 +52,8 @@ import static com.mongodb.client.model.Sorts.ascending;
     }
 
 
-    @Path("{owner}")
-    @POST @Consumes(MediaType.APPLICATION_JSON)
+    @POST @Path("{owner}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response newCategory(@Valid Category cat, @Username @PathParam("owner") String owner) {
         Authorizations.verify(owner, auth);
         Document category = new Document(KEY, cat.key)

@@ -31,8 +31,8 @@ import static com.mongodb.client.model.Projections.exclude;
     private static final String TAG = UserResource.class.getSimpleName();
 
 
-    @Path("{username}")
-    @GET @Produces(MediaType.APPLICATION_JSON)
+    @GET @Path("{username}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response userDetail(@Username @PathParam("username") String username) {
         Document user = MongoDBs.users().find(eq(User.USERNAME, username))
             .projection(exclude(User.PASSWORD, User.AUTHORIZATION))
