@@ -15,6 +15,7 @@ public class Globals {
     public static final int MAX_SIZE = 100;
     public static final int SIZE_USERNAME = 12;
     public static final int SIZE_CATEGORY = 64;
+    public static final int LIMIT_REGISTER = 1;
 
 
     public static Gson newGson() {

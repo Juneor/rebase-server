@@ -2,10 +2,12 @@ package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.constraint.Username;
 import com.drakeet.rebase.api.tool.Authorizations;
+import com.drakeet.rebase.api.tool.Globals;
 import com.drakeet.rebase.api.tool.Hashes;
 import com.drakeet.rebase.api.tool.MongoDBs;
 import com.drakeet.rebase.api.tool.RebaseAsserts;
 import com.drakeet.rebase.api.tool.URIs;
+import com.drakeet.rebase.api.type.Failure;
 import com.drakeet.rebase.api.type.User;
 import java.util.Date;
 import javax.validation.Valid;
@@ -45,6 +47,12 @@ import static com.mongodb.client.model.Projections.exclude;
 
     @POST @Consumes(MediaType.APPLICATION_JSON)
     public Response register(@NotNull @Valid User user) {
+        long level = MongoDBs.users().count();
+        if (level > Globals.LIMIT_REGISTER) {
+            return Response.status(Response.Status.FORBIDDEN)
+                .entity(new Failure("Rebase suspends the registration service currently"))
+                .build();
+        }
         Document document = new Document(User.USERNAME, user.username)
             .append(User.PASSWORD, Hashes.sha1(user.password))
             .append(User.NAME, user.name)
