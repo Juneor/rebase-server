@@ -1,15 +1,19 @@
 package com.drakeet.rebase.api;
 
+import com.drakeet.rebase.api.constraint.CategoryKey;
+import com.drakeet.rebase.api.constraint.NotEmptyButNull;
+import com.drakeet.rebase.api.constraint.Username;
 import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Globals;
 import com.drakeet.rebase.api.tool.MongoDBs;
 import com.drakeet.rebase.api.tool.RebaseAsserts;
 import com.drakeet.rebase.api.tool.URIs;
 import com.drakeet.rebase.api.type.Feed;
-import com.mongodb.client.FindIterable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -23,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.hibernate.validator.constraints.Range;
 
 import static com.drakeet.rebase.api.tool.ObjectIds.objectId;
 import static com.mongodb.client.model.Filters.and;
@@ -35,28 +40,25 @@ import static com.mongodb.client.model.Sorts.descending;
  */
 @Path("categories/{owner}/{category}/feeds") public class FeedResource {
 
-    @PathParam("owner") String owner;
-    @PathParam("category") String category;
+    @Username @PathParam("owner") String owner;
+    @CategoryKey @PathParam("category") String category;
     @HeaderParam("Authorization") String auth;
 
 
     @GET @Produces(MediaType.APPLICATION_JSON)
     public Response readAll(
-        @QueryParam("last_id") String lastId,
-        @DefaultValue("20") @QueryParam("size") int size) {
+        @NotEmptyButNull @QueryParam("last_id") String lastId,
+        @Range(min = 1, max = Globals.MAX_SIZE) @DefaultValue("20") @QueryParam("size") int size) {
 
-        if (size > Globals.MAX_SIZE) {
-            size = Globals.MAX_SIZE;
-        }
+        RebaseAsserts.existCategory(category);
         List<Document> feeds = new ArrayList<>();
-        FindIterable<Document> iterable = MongoDBs.feeds().find();
         List<Bson> filters = new ArrayList<>();
         if (lastId != null) {
             filters.add(lt(Feed._ID, objectId(lastId)));
         }
         filters.add(eq(Feed.CATEGORY, category));
         filters.add(eq(Feed.OWNER, owner));
-        iterable.sort(descending(Feed._ID))
+        MongoDBs.feeds().find().sort(descending(Feed._ID))
             .filter(and(filters))
             .limit(size)
             .into(feeds);
@@ -65,7 +67,7 @@ import static com.mongodb.client.model.Sorts.descending;
 
 
     @POST @Consumes(MediaType.APPLICATION_JSON)
-    public Response newFeed(Feed feed) {
+    public Response newFeed(@NotNull @Valid Feed feed) {
         Authorizations.verify(owner, auth);
         RebaseAsserts.existCategory(category);
         Document document = new Document(Feed.CATEGORY, category)

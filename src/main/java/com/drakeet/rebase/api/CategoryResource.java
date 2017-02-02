@@ -1,5 +1,6 @@
 package com.drakeet.rebase.api;
 
+import com.drakeet.rebase.api.constraint.Username;
 import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Globals;
 import com.drakeet.rebase.api.tool.MongoDBs;
@@ -8,6 +9,7 @@ import com.drakeet.rebase.api.type.Category;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -38,7 +40,7 @@ import static com.mongodb.client.model.Sorts.ascending;
 
     @Path("{owner}")
     @GET @Produces(MediaType.APPLICATION_JSON)
-    public Response readAllOf(@PathParam("owner") String owner) {
+    public Response readAllOf(@Username @PathParam("owner") String owner) {
         List<Document> categories = new ArrayList<>();
         MongoDBs.categories().find()
             .projection(excludeId())
@@ -52,15 +54,15 @@ import static com.mongodb.client.model.Sorts.ascending;
 
     @Path("{owner}")
     @POST @Consumes(MediaType.APPLICATION_JSON)
-    public Response newCategory(Category input, @PathParam("owner") String owner) {
+    public Response newCategory(@Valid Category cat, @Username @PathParam("owner") String owner) {
         Authorizations.verify(owner, auth);
-        Document category = new Document(KEY, input.key)
-            .append(NAME, input.name)
-            .append(RANK, input.rank)
+        Document category = new Document(KEY, cat.key)
+            .append(NAME, cat.name)
+            .append(RANK, cat.rank)
             .append(OWNER, owner)
             .append(CREATED_AT, new Date());
         MongoDBs.categories().insertOne(category);
-        return Response.created(URIs.create("categories", owner, input.key))
+        return Response.created(URIs.create("categories", owner, cat.key))
             .entity(category)
             .build();
     }

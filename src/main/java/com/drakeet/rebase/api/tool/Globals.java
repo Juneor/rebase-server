@@ -13,6 +13,8 @@ public class Globals {
     public static final int LIMIT_CATEGORIES = 11;
     public static final String ENDPOINT = "https://api.drakeet.com/rebase";
     public static final int MAX_SIZE = 100;
+    public static final int SIZE_USERNAME = 12;
+    public static final int SIZE_CATEGORY = 64;
 
 
     public static Gson newGson() {

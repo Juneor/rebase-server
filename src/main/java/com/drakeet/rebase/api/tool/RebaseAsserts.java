@@ -17,7 +17,20 @@ public class RebaseAsserts {
             .projection(include(Category.KEY))
             .limit(1).first();
         if (result == null) {
-            throw new WebApplicationException(Responses.notFound("The category is not found."));
+            throwNotFoundOf("category");
         }
+    }
+
+
+    public static void notNull(Object user, String argName) {
+        if (user == null) {
+            throwNotFoundOf(argName);
+        }
+    }
+
+
+    private static void throwNotFoundOf(final String argName) {
+        String message = String.format("The %s is not found", argName);
+        throw new WebApplicationException(Responses.notFound(message));
     }
 }

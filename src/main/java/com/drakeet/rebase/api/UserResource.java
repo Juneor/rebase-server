@@ -1,13 +1,15 @@
 package com.drakeet.rebase.api;
 
+import com.drakeet.rebase.api.constraint.Username;
 import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Hashes;
 import com.drakeet.rebase.api.tool.MongoDBs;
-import com.drakeet.rebase.api.tool.Responses;
+import com.drakeet.rebase.api.tool.RebaseAsserts;
 import com.drakeet.rebase.api.tool.URIs;
 import com.drakeet.rebase.api.type.User;
-import com.google.common.base.Optional;
 import java.util.Date;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -31,21 +33,18 @@ import static com.mongodb.client.model.Projections.exclude;
 
     @Path("{username}")
     @GET @Produces(MediaType.APPLICATION_JSON)
-    public Response userDetail(@PathParam("username") String username) {
-        Document _user = MongoDBs.users().find(eq(User.USERNAME, username))
+    public Response userDetail(@Username @PathParam("username") String username) {
+        Document user = MongoDBs.users().find(eq(User.USERNAME, username))
             .projection(exclude(User.PASSWORD, User.AUTHORIZATION))
+            .limit(1)
             .first();
-        Optional<Document> user = Optional.fromNullable(_user);
-        if (user.isPresent()) {
-            return Response.ok(user.get()).build();
-        } else {
-            return Responses.notFound("The user is not found.");
-        }
+        RebaseAsserts.notNull(user, "user");
+        return Response.ok(user).build();
     }
 
 
     @POST @Consumes(MediaType.APPLICATION_JSON)
-    public Response register(User user) {
+    public Response register(@NotNull @Valid User user) {
         Document document = new Document(User.USERNAME, user.username)
             .append(User.PASSWORD, Hashes.sha1(user.password))
             .append(User.NAME, user.name)

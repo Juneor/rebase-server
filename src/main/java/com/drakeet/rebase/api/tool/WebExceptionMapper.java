@@ -3,7 +3,6 @@ package com.drakeet.rebase.api.tool;
 import com.drakeet.rebase.api.type.Failure;
 import com.mongodb.MongoWriteException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -22,12 +21,11 @@ public class WebExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(final Exception exception) {
-        Log.e(TAG, "[toResponse]" + exception.getMessage(), exception);
+        Log.e(TAG, "[toResponse]" + exception.getMessage());
         if (exception instanceof WebApplicationException) {
             Response _response = ((WebApplicationException) exception).getResponse();
             return Response.fromResponse(_response)
                 .entity(new Failure(_response.getStatusInfo().getReasonPhrase()))
-                .type(MediaType.APPLICATION_JSON)
                 .build();
 
         } else if (exception instanceof MongoWriteException) {
@@ -44,7 +42,6 @@ public class WebExceptionMapper implements ExceptionMapper<Exception> {
         } else {
             return Response.status(BAD_REQUEST)
                 .entity(new Failure(exception.getMessage()))
-                .type(MediaType.APPLICATION_JSON)
                 .build();
         }
     }
