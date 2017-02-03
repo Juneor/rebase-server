@@ -45,9 +45,9 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 /**
  * @author drakeet
  */
-@Path("/authentications") public class AuthenticationResource {
+@Path("/authorizations") public class AuthorizationResource {
 
-    private static final String TAG = AuthenticationResource.class.getSimpleName();
+    private static final String TAG = AuthorizationResource.class.getSimpleName();
 
 
     @GET @Path("{username}")

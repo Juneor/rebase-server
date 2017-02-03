@@ -39,7 +39,7 @@ public class Application extends ResourceConfig {
         property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
 
         register(UserResource.class);
-        register(AuthenticationResource.class);
+        register(AuthorizationResource.class);
         register(CategoryResource.class);
         register(FeedResource.class);
         register(GsonBodyProvider.class);
