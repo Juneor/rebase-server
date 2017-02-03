@@ -1,3 +1,7 @@
+# Rebase Server
+
+![](https://circleci.com/gh/drakeet/rebase-server.svg?&style=shield&circle-token=13a4bbb5dfb40f9e70509ff3f8638a5ea52f9e3c)
+
 API v0.7.1
 
 API Document: https://github.com/drakeet/rebase-api
