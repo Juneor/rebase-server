@@ -4,6 +4,14 @@ API Document: https://github.com/drakeet/rebase-api
 
 <img src="http://ww1.sinaimg.cn/large/86e2ff85gy1fcdnkkezlcj20ni114dkv" width=400 height=632/>
 
+### Features
+
+- Pure RESTful API
+- Base on Jersey 2, Java 8, MongoDB 3
+- All unhandled exceptions will be cast to `WebExceptionMapper` and processed as JSON Response
+- Use jersey-bean-validation to check and constrain the input parameters
+- The code is clear and well designed
+
 ### LICENSE
 
 =======
