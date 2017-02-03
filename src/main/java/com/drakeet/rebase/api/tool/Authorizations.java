@@ -3,6 +3,7 @@ package com.drakeet.rebase.api.tool;
 import com.drakeet.rebase.api.type.Authorization;
 import com.drakeet.rebase.api.type.User;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -33,21 +34,16 @@ public class Authorizations {
         } else {
             throw new IllegalArgumentException("The format of Authorization is unexpected.");
         }
-        Document user = MongoDBs.users().find(eq(User.USERNAME, username)).first();
+        Document user = MongoDBs.users().find(eq(User.USERNAME, username)).limit(1).first();
         if (user == null) {
-            throwUnauthorized();
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
         Document auth = user.get(User.AUTHORIZATION, Document.class);
-        if (auth.getString(Authorization.ACCESS_TOKEN).equals(accessToken)) {
+        if (Objects.equals(auth.getString(Authorization.ACCESS_TOKEN), accessToken)) {
             Log.i(TAG, "Verified successfully.");
         } else {
-            throwUnauthorized();
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
-    }
-
-
-    private static void throwUnauthorized() {
-        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
 
 
