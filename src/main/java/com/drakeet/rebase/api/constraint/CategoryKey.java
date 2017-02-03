@@ -47,7 +47,7 @@ public @interface CategoryKey {
 
         @Override
         public boolean isValid(final String value, final ConstraintValidatorContext context) {
-            return value != null && value.length() >= min && value.length() <= max;
+            return value == null || (value.length() >= min && value.length() <= max);
         }
     }
 }

@@ -75,7 +75,7 @@ import static com.mongodb.client.model.Sorts.descending;
             .append(Feed.TITLE, feed.title)
             .append(Feed.CONTENT, feed.content)
             .append(Feed.URL, feed.url)
-            .append(Feed.COVER, feed.cover)
+            .append(Feed.COVER_URL, feed.coverUrl)
             .append(Feed.OWNER, owner)
             .append(Feed.PUBLISHED_AT, new Date());
         MongoDBs.feeds().insertOne(document);

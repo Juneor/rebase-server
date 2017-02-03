@@ -15,6 +15,9 @@ import org.bson.Document;
 public class MongoDBs {
 
     private static final String TAG = MongoDBs.class.getSimpleName();
+
+    private static final int VERSION = 2;
+
     private static MongoDatabase db;
     private static MongoCollection<Document> users;
     private static MongoCollection<Document> categories;
@@ -25,7 +28,7 @@ public class MongoDBs {
         MongoClient mongoClient = new MongoClient("localhost", 27017);
         db = mongoClient.getDatabase("rebase");
         Log.i(TAG, "[setUp] Connect to database successfully");
-        MongoDBs.initCollections(db);
+        initCollections(db);
     }
 
 
