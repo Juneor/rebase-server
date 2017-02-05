@@ -11,7 +11,7 @@ API Document: https://github.com/drakeet/rebase-api
 ### Features
 
 - Pure RESTful API
-- Base on Jersey 2, Java 8, MongoDB 3
+- Based on Jersey 2, Java 8, MongoDB 3
 - All unhandled exceptions will be cast to `WebExceptionMapper` and processed as JSON Response
 - Use jersey-bean-validation to check and constrain the input parameters
 - The code is clear, clean and well designed
