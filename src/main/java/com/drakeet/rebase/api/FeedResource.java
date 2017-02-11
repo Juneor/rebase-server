@@ -91,13 +91,15 @@ import static com.mongodb.client.model.Sorts.descending;
     public Response newFeed(@NotNull @Valid Feed feed) {
         Authorizations.verify(owner, auth);
         RebaseAsserts.existCategory(category);
+        final Date now = new Date();
         Document document = new Document(Feed.CATEGORY, category)
             .append(Feed.TITLE, feed.title)
             .append(Feed.CONTENT, feed.content)
             .append(Feed.URL, feed.url)
             .append(Feed.COVER_URL, feed.coverUrl)
             .append(Feed.OWNER, owner)
-            .append(Feed.PUBLISHED_AT, new Date());
+            .append(Feed.CREATED_AT, now)
+            .append(Feed.PUBLISHED_AT, now);
         MongoDBs.feeds().insertOne(document);
         return Response.created(
             URIs.create("categories", owner, category, "feeds",

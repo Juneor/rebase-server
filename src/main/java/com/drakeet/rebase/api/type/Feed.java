@@ -36,6 +36,8 @@ public class Feed extends Jsonable {
     public static final String OWNER = "owner";
     public static final String COVER_URL = "cover_url";
     public static final String PUBLISHED_AT = "published_at";
+    public static final String UPDATED_AT = "updated_at";
+    public static final String CREATED_AT = "created_at";
 
     @NotNull @Length(min = 1, max = 256)
     public String title;
