@@ -47,7 +47,6 @@ import static com.drakeet.rebase.api.type.Category.NAME;
 import static com.drakeet.rebase.api.type.Category.OWNER;
 import static com.drakeet.rebase.api.type.Category.RANK;
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Projections.excludeId;
 import static com.mongodb.client.model.Sorts.ascending;
 
 /**
@@ -63,7 +62,6 @@ import static com.mongodb.client.model.Sorts.ascending;
     public Response readAll(@Username @PathParam("owner") String owner) {
         List<Document> categories = new ArrayList<>();
         MongoDBs.categories().find()
-            .projection(excludeId())
             .filter(eq(OWNER, owner))
             .sort(ascending(RANK))
             .limit(Globals.LIMIT_CATEGORIES)
