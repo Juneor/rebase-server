@@ -44,7 +44,7 @@ public class MongoDBs {
     private static MongoCollection<Document> feeds;
 
 
-    public static void setUp() {
+    public static void setup() {
         MongoClient mongoClient = new MongoClient("localhost", 27017);
         db = mongoClient.getDatabase("rebase");
         Log.i(TAG, "[setUp] Connect to database successfully");

@@ -49,6 +49,6 @@ public class Application extends ResourceConfig {
 
         Log.prefix = "------> [Rebase] ~ ";
 
-        MongoDBs.setUp();
+        MongoDBs.setup();
     }
 }
