@@ -26,6 +26,7 @@ import com.drakeet.rebase.api.constraint.Username;
 import com.drakeet.rebase.api.tool.Authorizations;
 import com.drakeet.rebase.api.tool.Globals;
 import com.drakeet.rebase.api.tool.MongoDBs;
+import com.drakeet.rebase.api.tool.PATCH;
 import com.drakeet.rebase.api.tool.RebaseAsserts;
 import com.drakeet.rebase.api.tool.URIs;
 import com.drakeet.rebase.api.type.Feed;
@@ -50,11 +51,16 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.hibernate.validator.constraints.Range;
 
+import static com.drakeet.rebase.api.tool.Filters.filterNotNull;
+import static com.drakeet.rebase.api.tool.MongoDBs.optionalSet;
 import static com.drakeet.rebase.api.tool.ObjectIds.objectId;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lt;
 import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.currentDate;
 
 /**
  * @author drakeet
@@ -113,7 +119,30 @@ import static com.mongodb.client.model.Sorts.descending;
     public Response feedDetail(@PathParam("_id") String _id) {
         Document feed = MongoDBs.feeds()
             .find(eq(Feed._ID, objectId(_id)))
-            .limit(1).first();
+            .first();
+        RebaseAsserts.notNull(feed, "feed");
+        return Response.ok(feed).build();
+    }
+
+
+    @PATCH @Path("{_id}")
+    public Response editFeed(@PathParam("_id") String _id, @NotNull Feed input) {
+        Authorizations.verify(owner, auth);
+        if (!isNullOrEmpty(input.category)) {
+            RebaseAsserts.existCategory(input.category);
+        }
+        final Bson target = eq(Feed._ID, objectId(_id));
+        MongoDBs.feeds().updateOne(target,
+            combine(filterNotNull(
+                optionalSet(Feed.TITLE, input.title),
+                optionalSet(Feed.CONTENT, input.content),
+                optionalSet(Feed.URL, input.url),
+                optionalSet(Feed.CATEGORY, input.category),
+                optionalSet(Feed.COVER_URL, input.coverUrl),
+                currentDate(Feed.UPDATED_AT))
+            )
+        );
+        Document feed = MongoDBs.feeds().find(target).first();
         RebaseAsserts.notNull(feed, "feed");
         return Response.ok(feed).build();
     }

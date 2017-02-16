@@ -27,7 +27,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 /**
  * @author drakeet
@@ -91,5 +93,14 @@ public class MongoDBs {
 
     public static MongoCollection<Document> feeds() {
         return feeds;
+    }
+
+
+    public static <TItem> Bson optionalSet(final String fieldName, final TItem value) {
+        if (value == null) {
+            return null;
+        } else {
+            return Updates.set(fieldName, value);
+        }
     }
 }

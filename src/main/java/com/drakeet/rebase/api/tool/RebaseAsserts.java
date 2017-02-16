@@ -37,7 +37,7 @@ public class RebaseAsserts {
             .projection(include(Category.KEY))
             .limit(1).first();
         if (result == null) {
-            throwNotFoundOf("category");
+            throwNotFoundOf("category: " + key);
         }
     }
 

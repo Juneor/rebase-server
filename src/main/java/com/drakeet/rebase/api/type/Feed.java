@@ -20,6 +20,7 @@
 
 package com.drakeet.rebase.api.type;
 
+import com.drakeet.rebase.api.constraint.CategoryKey;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
@@ -44,6 +45,9 @@ public class Feed extends Jsonable {
 
     @Length(min = 0, max = 1024 * 1024)
     public String content;
+
+    @CategoryKey
+    public String category;
 
     @org.hibernate.validator.constraints.URL
     public String url;
