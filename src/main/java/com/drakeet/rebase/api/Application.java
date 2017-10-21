@@ -42,7 +42,8 @@ public class Application extends ResourceConfig {
         register(AuthorizationResource.class);
         register(CategoryResource.class);
         register(FeedResource.class);
-        register(LicenseResource.class);
+        register(LicenseV1Resource.class);
+        register(LicenseV2Resource.class);
         register(GsonBodyProvider.class);
         register(WebExceptionMapper.class);
         register(ConstraintViolationExceptionMapper.class);
