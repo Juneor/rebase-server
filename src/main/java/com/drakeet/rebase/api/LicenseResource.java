@@ -49,14 +49,19 @@ import static com.mongodb.client.model.Updates.set;
      *
      * @param id 激活码 key
      * @param deviceId 设备 ID
-     * @return 此请求之前保存在服务端的 License
+     * @param override 是否覆盖设备 ID
+     * @return 如果激活码有效，返回此请求之前保存在服务端的 License，否则返回错误
      */
     @GET @Path("{_id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response verify(@PathParam("_id") String id, @NotEmpty @QueryParam("device_id") String deviceId) {
+    public Response verify(
+        @PathParam("_id") String id,
+        @NotEmpty @QueryParam("device_id") String deviceId,
+        @QueryParam("override") boolean override) {
+        
         Document license = MongoDBs.licenses().find(eq(License._ID, objectId(id))).first();
         RebaseAsserts.notNull(license, "license");
-        if (!deviceId.equals(license.getString(License.DEVICE_ID))) {
+        if (!deviceId.equals(license.getString(License.DEVICE_ID)) && override) {
             final Bson target = eq(License._ID, objectId(id));
             MongoDBs.licenses().updateOne(target, set(License.DEVICE_ID, deviceId));
         }
