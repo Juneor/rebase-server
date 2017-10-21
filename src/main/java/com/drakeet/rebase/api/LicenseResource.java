@@ -45,12 +45,12 @@ import static com.mongodb.client.model.Updates.set;
 
     /**
      * 校验激活码是否有效。如果激活码存在，并且设备 ID 没变，则返回原 License 对象。如果不存在，返回错误信息。
-     * 如果存在，但设备变了，则覆盖使用新的设备 ID，并返回包含覆盖之前的旧设备 ID 的 License 对象。
+     * 如果存在，但设备变了，则根据 override 覆盖使用新的设备 ID。
      *
      * @param id 激活码 key
      * @param deviceId 设备 ID
      * @param override 是否覆盖设备 ID
-     * @return 如果激活码有效，返回此请求之前保存在服务端的 License，否则返回错误
+     * @return 如果激活码有效，返回最新 License，否则返回错误
      */
     @GET @Path("{_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,6 +64,7 @@ import static com.mongodb.client.model.Updates.set;
         if (!deviceId.equals(license.getString(License.DEVICE_ID)) && override) {
             final Bson target = eq(License._ID, objectId(id));
             MongoDBs.licenses().updateOne(target, set(License.DEVICE_ID, deviceId));
+            license.put(License.DEVICE_ID, deviceId);
         }
         return Response.ok(license).build();
     }
