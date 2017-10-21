@@ -44,6 +44,7 @@ public class MongoDBs {
     private static MongoCollection<Document> users;
     private static MongoCollection<Document> categories;
     private static MongoCollection<Document> feeds;
+    private static MongoCollection<Document> licenses;
 
 
     public static void setup() {
@@ -59,12 +60,14 @@ public class MongoDBs {
             db.createCollection("users");
             db.createCollection("categories");
             db.createCollection("feeds");
+            db.createCollection("licenses");
         } catch (Exception e) {
             Log.w(TAG, "[attemptCreateCollections] " + e.getMessage());
         }
         users = db.getCollection("users");
         categories = db.getCollection("categories");
         feeds = db.getCollection("feeds");
+        licenses = db.getCollection("licenses");
 
         users.createIndex(
             Indexes.ascending(User.USERNAME),
@@ -93,6 +96,11 @@ public class MongoDBs {
 
     public static MongoCollection<Document> feeds() {
         return feeds;
+    }
+
+
+    public static MongoCollection<Document> licenses() {
+        return licenses;
     }
 
 
