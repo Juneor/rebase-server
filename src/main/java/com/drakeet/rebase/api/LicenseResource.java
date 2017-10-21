@@ -25,6 +25,7 @@ import com.drakeet.rebase.api.tool.RebaseAsserts;
 import com.drakeet.rebase.api.type.License;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -42,15 +43,13 @@ import static com.mongodb.client.model.Updates.set;
  */
 @Path("/licenses") public class LicenseResource {
 
-    @GET
+    @GET @Path("{_id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response verify(
-        @NotEmpty @QueryParam("key") String key,
-        @NotEmpty @QueryParam("device_id") String deviceId) {
-        Document license = MongoDBs.licenses().find(eq(License._ID, objectId(key))).first();
+    public Response verify(@PathParam("_id") String id, @NotEmpty @QueryParam("device_id") String deviceId) {
+        Document license = MongoDBs.licenses().find(eq(License._ID, objectId(id))).first();
         RebaseAsserts.notNull(license, "license");
         if (!deviceId.equals(license.getString(License.DEVICE_ID))) {
-            final Bson target = eq(License._ID, objectId(key));
+            final Bson target = eq(License._ID, objectId(id));
             MongoDBs.licenses().updateOne(target, set(License.DEVICE_ID, deviceId));
         }
         return Response.ok(license).build();
