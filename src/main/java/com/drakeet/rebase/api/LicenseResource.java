@@ -22,7 +22,9 @@ package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.MongoDBs;
 import com.drakeet.rebase.api.tool.RebaseAsserts;
+import com.drakeet.rebase.api.tool.Responses;
 import com.drakeet.rebase.api.type.License;
+import java.util.Objects;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,9 +34,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import static com.drakeet.rebase.api.tool.ObjectIds.objectId;
+import static com.drakeet.rebase.api.tool.Strings.isEmpty;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
@@ -56,12 +58,15 @@ import static com.mongodb.client.model.Updates.set;
     @Produces(MediaType.APPLICATION_JSON)
     public Response verify(
         @PathParam("_id") String id,
-        @NotEmpty @QueryParam("device_id") String deviceId,
+        @QueryParam("device_id") String deviceId,
         @QueryParam("override") boolean override) {
-        
+
+        if (override && isEmpty(deviceId)) {
+            return Responses.badRequest("device_id required");
+        }
         Document license = MongoDBs.licenses().find(eq(License._ID, objectId(id))).first();
         RebaseAsserts.notNull(license, "license");
-        if (!deviceId.equals(license.getString(License.DEVICE_ID)) && override) {
+        if (override && !Objects.equals(deviceId, license.getString(License.DEVICE_ID))) {
             final Bson target = eq(License._ID, objectId(id));
             MongoDBs.licenses().updateOne(target, set(License.DEVICE_ID, deviceId));
             license.put(License.DEVICE_ID, deviceId);
