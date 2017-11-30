@@ -22,6 +22,7 @@ package com.drakeet.rebase.api;
 
 import com.drakeet.rebase.api.tool.MongoDBs;
 import com.drakeet.rebase.api.tool.RebaseAsserts;
+import com.drakeet.rebase.api.tool.Responses;
 import com.drakeet.rebase.api.type.License;
 import java.util.Objects;
 import javax.ws.rs.GET;
@@ -34,6 +35,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import static com.drakeet.rebase.api.tool.ObjectIds.objectId;
@@ -48,6 +50,9 @@ import static com.mongodb.client.model.Updates.set;
     @GET @Path("{_id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response check(@PathParam("_id") String id) {
+        if (!ObjectId.isValid(id)) {
+            return Responses.notFound("激活码无效");
+        }
         Document license = MongoDBs.licenses().find(eq(License._ID, objectId(id))).first();
         RebaseAsserts.notNull(license, "license");
         return Response.ok(license).build();
@@ -57,6 +62,9 @@ import static com.mongodb.client.model.Updates.set;
     @POST @Path("{_id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response active(@PathParam("_id") String id, @NotEmpty @QueryParam("device_id") String deviceId) {
+        if (!ObjectId.isValid(id)) {
+            return Responses.notFound("激活码无效");
+        }
         Document license = MongoDBs.licenses().find(eq(License._ID, objectId(id))).first();
         RebaseAsserts.notNull(license, "license");
         if (!Objects.equals(deviceId, license.getString(License.DEVICE_ID))) {
